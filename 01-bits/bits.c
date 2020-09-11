@@ -142,7 +142,7 @@ int32_t ehImpar(int32_t x) {
  *          mod4(7) -> 3
  */
 int32_t mod4(int32_t x) {
-    return -1;
+    return x&3;
 }
 
 /*
