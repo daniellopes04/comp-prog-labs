@@ -56,7 +56,7 @@
  *          ehDiferente(16, 8) -> 1
  */
 int32_t ehDiferente(int32_t x, int32_t y) {
-    return (x^y)^0x80000000;
+    return !((x^y)^0x80000000);
 }
 
 /*
@@ -209,7 +209,7 @@ int32_t ehPositivo(int32_t x) {
  *          negativo(42) -> -42
  */
 int32_t negativo(int32_t x) {
-    return -1;
+    return x^1;
 }
 
 /*
@@ -246,7 +246,23 @@ int32_t bitwiseOr(int32_t x, int32_t y) {
  *          mult6(36) -> 216
  */
 int32_t mult6(int32_t x) {
-    return -1;
+    /*
+     * Na operação de deslocamento à esquerda, simbolizada por <<, é feito o 
+     * deslocamento de todos os bits n vezes para a esquerda, preenchendo os espaços
+     * na direita com zeros. Por exemplo, 0001 << 2 = 0100. Matematicamente falando, 
+     * x << n equivale a multiplicar x por 2^n.
+     * 
+     * Podemos escrever uma multiplicação por 6 da seguinte forma:
+     * 
+     * 6*x = (4+2)x = 4*x + 2*x
+     * 
+     * 4 e 2 são potências de 2 (2^2 e 2^1, respectivamente), que estão sendo 
+     * multiplicadas por x, o que nos dá a chance de usar a operação de deslocamento 
+     * à esquerda. Assim, temos:
+     * 
+     * 2^2*x + 2^1*x = x<<2 + x<<1
+     */
+    return (x<<2)+(x<<1);
 }
 
 /*
@@ -321,7 +337,7 @@ int32_t byteEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-    return -1;
+    return x;
 }
 
 void teste(int32_t saida, int32_t esperado) {
