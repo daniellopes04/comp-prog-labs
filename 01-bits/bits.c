@@ -74,6 +74,18 @@ int32_t ehDiferente(int32_t x, int32_t y) {
  *          ehZero(7) -> 0
  */
 int32_t ehZero(int32_t x) {
+    /* 
+     * A operação "ou exclusivo" (representada por ^) retornará um valor falso
+     * sempre que as entradas forem iguais e verdadeiro caso sejam diferentes.
+     * Por isso, podemos usá-la para verificar se um valor é igual a zero,
+     * bastando fazer a operação de "ou exclusivo" com 0.
+     * 
+     * Como o resultado será 0 caso o número seja igual a 0 e 1 se for diferente,
+     * temos que fazer uma operação de negação (representada por !) que muda o 
+     * valor de verdadeiro (1) para falso (0) e vice-versa. Assim, teremos a 
+     * saída 1 caso o número seja zero e 0 se não for.
+     * 
+     */
     return !(x^0);
 }
 
@@ -107,10 +119,10 @@ int32_t ehImpar(int32_t x) {
      * 3 decimal = 11 binário -> ímpar
      * 
      * Assim, podemos utilizar a operação de "e" para determinar se o número é par 
-     * ou ímpar. Quando fazemos 0 & 1 (0 "e" 1) temos como resultado 0, já quando fazemos 1 & 1
-     * temos como resultado 1. Isso significa que, caso o algarismo menos significativo
-     * seja 0 (ou seja, se o número for par), o resultado da operação "e" com 1 será 0.
-     * Caso contrário, se o número for ímpar, o resultado será 1.
+     * ou ímpar. Quando fazemos 0 & 1 (0 "e" 1) temos como resultado 0, já quando 
+     * fazemos 1 & 1 temos como resultado 1. Isso significa que, caso o algarismo menos 
+     * significativo seja 0 (ou seja, se o número for par), o resultado da operação 
+     * "e" com 1 será 0. Caso contrário, se o número for ímpar, o resultado será 1.
      */
     return 0x1&x;
 }
@@ -148,6 +160,37 @@ int32_t mod4(int32_t x) {
  *          ehPositivo(-343) -> 0
  */
 int32_t ehPositivo(int32_t x) {
+    /*
+     * A representação de números inteiros em ponto flutuante é feita da seguinte
+     * forma. O algarismo (ou bit) mais significativo representa o valor do sinal
+     * (0 para números positivos, 1 para números negativos), seguido por 8 bits 
+     * que representam o expoente e mais 23 bits para a mantissa. O número inteiro
+     * é definido por:
+     * 
+     * (-1)^s * M * 2^e
+     * 
+     * onde s = sinal, M = mantissa e e = expoente.
+     * 
+     * Assim, para verificar se um número é positivo ou não, só precisamos saber
+     * se o bit de sinal é 0 ou 1. Para fazer isso, podemos executar uma operação
+     * de "e" (&) com o menor número inteiro negativo, representado pelo número 
+     * que possui o bit mais significativo em 1 e o restante em 0:
+     * 
+     * 0x80000000 = 1000...000 = -2147483648
+     * 
+     * A operação "e" retorna 0 caso as entradas sejam ambas 0 e 1 caso elas
+     * sejam diferentes. Portanto, se o número que queremos verificar for positivo, 
+     * a operação retornará um número com o primeiro bit em 0 (pois 0 & 0 = 0) e 
+     * todos os outros bits também em 0, que corresponde ao número 0 em si. Já se 
+     * o número for negativo, o valor retornado será uma sequência de bits em que
+     * o primeiro algarismo é 1 e o restante é 0, que corresponde ao nosso menor
+     * valor negativo (0x80000000).
+     * 
+     * A operação de negação (!) transforma valores verdadeiros em falsos e vice-versa.
+     * Como a linguagem C define 0 como falso e qualquer valor diferente de zero como
+     * verdadeiro, só precisamos executar a negação (!) no resultado, pois queremos que
+     * o valor retornado seja 1 caso o número seja positivo e 0 caso contrário.
+     */
     return !(0x80000000&x);
 }
 
