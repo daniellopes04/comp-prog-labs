@@ -441,6 +441,51 @@ int32_t mult6(int32_t x) {
  *
  */
 int32_t bitEmP(int32_t x, uint8_t p) {
+    /*
+     * Queremos retornar o bit na posição p de um número x. Para fazer isso, podemos
+     * fazer uma operação de "e" (&) com um número (chamaremos ele de máscara) que 
+     * terá todos os algarismos em 0, exceto o da posição p que queremos retornar, 
+     * que estará em 1. Porém, temos dois problemas para resolver. O primeiro é que 
+     * não sabemos previamente a posição p do bit que devemos retornar. Além disso, 
+     * o valor de p é variável, tornando a máscara para fazer a operação também 
+     * variável. O segundo é que ao criarmos a máscara, somente o bit da posição p
+     * de x será reproduzido NA posição p. Ou seja, caso esse bit seja 0, o número 
+     * representado (visto que todas as outras posições serão também 0) será ainda 0.
+     * Porém, caso esse bit seja 1, o número representado será diferente de 0, visto 
+     * que ele estará numa posição p que varia entre 0 e 31 e, para cada posição que 
+     * este bit 1 estiver, teremos uma representação de um número diferente.
+     * 
+     * Para resolver ambos os problemas, podemos fazer uso das operações de shift, ou
+     * deslocamento, representadas por >> e <<. Quando fazer x>>n, cada bit de x é 
+     * deslocado n vezes para a direita, acontecendo o mesmo com x<<n para a esquerda.
+     * 
+     * Queremos retornar o bit da posição p e, para isso, podemos usar o número 0x1, 
+     * cujo bit menos significativo é 1 e os demais são 0, movendo-o para a esquerda p
+     * vezes. Isso resultará no bit 1 sendo colocado na posição p. Usando o resultado 
+     * desse deslocamento como máscara para a operação de "e" com x, teremos na posição
+     * p do resultado o mesmo bit da posição p de x. Para reproduzir esse bit da forma
+     * adequada, precisamos movê-lo de volta para o bit menos significativo fazendo um
+     * deslocamento novamente, dessa vez para a direita, do resultado anterior p vezes.
+     * 
+     * Ainda assim, encontramos outro problema. As operações de deslocamento juntamente
+     * com a operação de "e" com a máscara funcionam na maioria dos casos. Porém, em
+     * outros, o valor depois do deslocamento para a direita pode retornar negativo.
+     * Isso acontece porque temos dois tipos diferentes de deslocamento, o deslocamento
+     * lógico, que preenche os lugares dos bits deslocados com 0, e o deslocamento
+     * aritmético, que preenche os lugares dos bits deslocados com 1. Na linguagem C, a
+     * escolha do deslocamento a ser realizado é feita com base no tipo do número 
+     * representado. Caso o número seja um inteiro com sinal, por exemplo, é feito o
+     * deslocamento lógico, já para inteiros sem sinal é feito o deslocamento aritmético.
+     * 
+     * Por isso, dependendo da entrada, as operações de deslocamento podem ser feitas
+     * de forma aritmética (levando também em consideração que p é um número inteiro sem
+     * sinal) e alterar o valor da represantação do número final para um número negativo.
+     * Entretanto, podemos resolver este problema facilmente adicionando uma operação de
+     * "e" ao final com o número 1. Assim, para os resultados que já estiverem nos valores
+     * esperados de 0 ou 1 nada será alterado. E, para os valores que forem representados 
+     * como -1, casos em que o bit deveria ser 1, mas por causa do deslocamento ser feito
+     * de forma aritmética é transformado em negativo, a operação retornará 1 como esperado.
+     */
     return (((0x1<<p)&x)>>p)&0x1;
 }
 
@@ -467,6 +512,22 @@ int32_t bitEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t byteEmP(int32_t x, uint8_t p) {
+    /*
+     * A ideia aqui para obter o byte que queremos é a mesma da função anterior. 
+     * Criamos uma máscara com o último byte (os últimos 8 bits) colocados em 1, sendo
+     * o restante dela em 0. A seguir deslocamos essa máscara para o posição do byte
+     * que queremos, fazendo uma operação de "e" entre x e a máscara para zerarmos todo
+     * o valor de x, exceto o byte que procuramos. Por último, deslocamos o byte do
+     * meio da representação para o lugar do byte menos significativo para realizar o 
+     * retorno.
+     * 
+     * Vale destacar que o deslocamento é feito em p<<3 posições ao invés de somente p
+     * posições. Isso acontece porque p representa aqui a posição do byte e não do bit. 
+     * Temos que 1 byte = 8 bits, ou seja, nossa representação de 32 bits possui 4 bytes.
+     * Assim, precisamos multiplicar p por 8 para encontrar o byte desejado. Como já foi
+     * dito anteriormente, a operação de deslocamento para a esquerda x<<n equivale a
+     * multiplicar x por 2^n. Então fazemos p<<3 para obter p*2^3 = p*8. 
+     */
     return ((0xFF<<(p<<3))&x)>>(p<<3);
 }
 
