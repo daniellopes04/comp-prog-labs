@@ -58,6 +58,29 @@
 int32_t ehDiferente(int32_t x, int32_t y) {
     /*
      * se x^y = 0, x=y
+     * 
+     * A operação de negação lógica (! na linguagem C) tranforma valores falsos
+     * em verdadeiros e vice-versa. Em C, o valor 0 é considerado falso e qualquer
+     * outro valor é considerado verdadeiro (ou seja, isso inclui números positivos
+     * e negativos).
+     * 
+     * Já operação de "ou exclusivo", representada por ^, retorna como resultado
+     * 0 se as entradas forem iguais e 1 caso elas sejam diferentes. Ao fazermos
+     * essa operação em cada algarismo de dois números binários, teremos o retorno 
+     * 0 se os números forem iguais e um retorno diferente (!=) de zero se os 
+     * números forem diferentes:
+     * 
+     * x^y = 0 se x=y
+     * x^y != 0 se x!=y
+     * 
+     * Queremos que a função retorne 1 se x!=y e 0 se x=y. O retorno da operação
+     * "ou exclusivo" já é 0 quando as entradas são iguais. Porém quando elas são
+     * diferentes, o retorno é diferente de zero, então precisamos corrigir isso.
+     * Para fazer isso, podemos negar o resultado da operação, que transformará os
+     * valores diferentes de 0 (verdadeiros) em 0 (falso), e os valores 0 (falsos) 
+     * em 1 (verdadeiros). Assim, teremos resultados em 1 para os números iguais 
+     * e em 0 para os números diferentes. Finalmente, só precisamos negar este
+     * resultado mais uma vez para retornarmos aos valores esperados.
      */
     return !(!(x^y));
 }
@@ -145,6 +168,45 @@ int32_t ehImpar(int32_t x) {
  *          mod4(7) -> 3
  */
 int32_t mod4(int32_t x) {
+    /*
+     * Vejamos alguns exemplos do módulo da operação de divisão por 10 na base 10.
+     * 
+     * 0 % 10 = 0
+     * 1 % 10 = 1
+     * 2 % 10 = 2
+     * ...
+     * 9 % 10 = 9
+     * 10 % 10 = 0
+     * 11 % 10 = 1 
+     * ...
+     * 99 % 10 = 9
+     * 100 % 10 = 0
+     * 101 % 10 = 1
+     * ...
+     * 
+     * Percebemos que a operação de módulo possui um ciclo, ela varia de 0 até o valor
+     * da base-1 e volta a 0, repetindo novamente o ciclo. Isso significa que podemos
+     * saber o módulo 10 de um número na base 10 apenas considerando o último algarismo
+     * do número: 1242349 (decimal) % 10 = 9.
+     * 
+     * Se quiséssemos saber o módulo 100 de um número na base 10, poderíamos apenas
+     * reproduzir os últimos dois algarismos do número. Isso porque 100 nada mais é do
+     * que a base elevada à 2ª potência (100 = 10^2). Usando o mesmo número de antes, 
+     * temos que 1242349 (decimal) % 100 = 49.
+     * 
+     * Pode-se dizer, portanto, que para encontrar um número x % b^n, sendo n>=0 e
+     * b a base em que o número x está representado, basta considerar os n algarismos 
+     * menos significativos de x.
+     * 
+     * O mesmo vale para a base 2. Portanto, se quisermos encontrar o valor de um número
+     * x módulo 4, visto que 4 é uma potẽncia de 2 (4 = 2^2), podemos apenas considerar
+     * os dois últimos algarismos do número x. 
+     * 
+     * Para fazer isso, podemos fazer uma operação de "e" (&), com um número com os dois
+     * últimos bits ou algarismos em 1 e todos os outros em 0. Assim teremos no resultado
+     * somente os dois últimos algarismos que queremos. Esse número é nada menos que o 
+     * valor do módulo que queremos encontrar menos 1, ou seja, 4-1 = 3.
+     */
     return x&3;
 }
 
@@ -265,11 +327,58 @@ int32_t negativo(int32_t x) {
  *              11 | 1001 -> 1011
  */
 int32_t bitwiseOr(int32_t x, int32_t y) {
-    /*
-     * Cheguei nesse resultado com as tabelas verdade das operações & e ^. 
-     * Explicar melhor.
+    /* 
+     * Precisamos encontrar uma equivalência para a operação de "ou", representada
+     * por | usando as operações disponíveis. Para isso, podemos olhar para a tabela
+     * verdade da operação que desejamos reproduzir.
+     * 
+     * OPERAÇÃO "OU"
+     * A  B   Z
+     * 0  0 = 0
+     * 0  1 = 1
+     * 1  0 = 1
+     * 1  1 = 1
+     * 
+     * Essa tabela nos diz o resultado da operação para os valores possíveis de duas
+     * entradas A e B. Ou seja, quando A = B = 0 o resultado será 0 e em todos os 
+     * outros casos será 1.
+     * 
+     * Se fizermos a mesma tabela para as operações "e" (&) e "ou exclusivo" (^), 
+     * temos:
+     * 
+     * OPERAÇÃO "E"
+     * A  B   X
+     * 0  0 = 0
+     * 0  1 = 0
+     * 1  0 = 0
+     * 1  1 = 1
+     * 
+     * OPERAÇÃO "OU-EXCLUSIVO"
+     * A  B   Y
+     * 0  0 = 0
+     * 0  1 = 1
+     * 1  0 = 1
+     * 1  1 = 0
+     * 
+     * O que podemos perceber com essas tabelas é que a operação de "ou" que desejamos
+     * fazer nada mais é do que uma operação de "ou exclusivo" entre as tabelas da 
+     * operação "e" e da operação de "ou exclusivo". Isso pode ser visualizado pelos
+     * valores das colunas X, Y e Z. Se fizermos uma nova tabela, dessa vez considerando
+     * a operação de "ou exclusivo" emtre as colunas X e Y, obteremos a coluna Z, que é
+     * o resultado que esperamos.
+     * 
+     * OPERAÇÃO "OU-EXCLUSIVO"
+     * X  Y   Z
+     * 0  0 = 0
+     * 0  1 = 1
+     * 0  1 = 1
+     * 1  0 = 1
+     * 
+     * Como X = A&B, Y = A^B e Z = A|B, temos:
+     * 
+     * A|B = (A&B)^(A^B)
      */
-    return ~((~(x&y))&(~x^y));
+    return (x&y)^(x^y);
 }
 
 /*
@@ -377,7 +486,7 @@ int32_t byteEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-    return  ~(x&&1)+2;
+    return  (x<<x)+~(x>>x);
 }
 
 void teste(int32_t saida, int32_t esperado) {
