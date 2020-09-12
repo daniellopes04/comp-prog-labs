@@ -26,8 +26,8 @@
  *      Versão do GCC utilizada: 9.3.0
  * 
  *      Aluno: Níkolas Ribeiro curtinhas Pimentel
- *      DRE: 
- *      Versão do GCC utilizada: 
+ *      DRE: 118104754
+ *      Versão do GCC utilizada: 7.5.0 (compilador online)
  *
  * Se descobrir algo errado, inesperado ou engraçado com o código,
  * entre em contato com o monitor!
