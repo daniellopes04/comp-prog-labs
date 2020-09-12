@@ -332,7 +332,7 @@ int32_t mult6(int32_t x) {
  *
  */
 int32_t bitEmP(int32_t x, uint8_t p) {
-    return ((0x1<<p)&x)>>p;
+    return (((0x1<<p)&x)>>p)&0x1;
 }
 
 /*
@@ -358,7 +358,7 @@ int32_t bitEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t byteEmP(int32_t x, uint8_t p) {
-    return ((0xFF<<p)&x)>>p;
+    return ((0xFF<<(p<<3))&x)>>(p<<3);
 }
 
 /*
@@ -377,7 +377,7 @@ int32_t byteEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-    return  x^0;
+    return  ~(x&&1)+2;
 }
 
 void teste(int32_t saida, int32_t esperado) {
