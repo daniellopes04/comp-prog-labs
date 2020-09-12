@@ -23,11 +23,11 @@
  * Assinatura:
  *      Aluno: Daniel Lopes de Sousa
  *      DRE: 114143976
- *      versão do GCC utilizada: 9.3.0
+ *      Versão do GCC utilizada: 9.3.0
  * 
- *      Aluno: 
+ *      Aluno: Níkolas Ribeiro curtinhas Pimentel
  *      DRE: 
- *      versão do GCC utilizada: 
+ *      Versão do GCC utilizada: 
  *
  * Se descobrir algo errado, inesperado ou engraçado com o código,
  * entre em contato com o monitor!
@@ -56,7 +56,10 @@
  *          ehDiferente(16, 8) -> 1
  */
 int32_t ehDiferente(int32_t x, int32_t y) {
-    return !((x^y)^0x80000000);
+    /*
+     * se x^y = 0, x=y
+     */
+    return !(!(x^y));
 }
 
 /*
@@ -209,7 +212,40 @@ int32_t ehPositivo(int32_t x) {
  *          negativo(42) -> -42
  */
 int32_t negativo(int32_t x) {
-    return x^1;
+    /*
+     * Na representação de números positivos e negativos, consideram-se os números 
+     * com o primeiro algarismo (bit) igual a 0 como positivos e aqueles com o 
+     * primeiro algarismo em 1 como negativos. Assim, podemos alterar esse bit para
+     * mudar o sinal do número, porém, como nenhum outro bit foi alterado, o número
+     * resultante será diferente.
+     * 
+     * Podemos pensar nessa representação como um círculo ou roda. Se diminuírmos
+     * em 1 o menor valor negativo que pode ser representado, -2147483648, também 
+     * representado por 0x80000000, teremos o maior valor positivo, que é 2147483647.
+     * Da mesma forma, se somarmos em 1 o maior valor positivo, 2147483647, também
+     * representado por 0x7FFFFFFF em hexadecimal, teremos como resultado o menor
+     * valor negativo, que é -2147483648. Toda vez que a representação chega no seu
+     * limite, ela faz uma "volta" e retorna para o que pode ser representado dessa
+     * forma. 
+     * 
+     * Por isso, voltando a analogia do círculo, para converter um número nessa 
+     * representação, podemos encontrar o número que é diretamente oposto a ele, ou 
+     * seja, cuja distância para o nosso número seja o diâmetro do nosso círculo.
+     * Podemos encontrar esse número fazendo uma operação de negação bit a bit, também
+     * representada pelo símbolo ~, ou seja, tranformando todos os bits 0 em 1 e 
+     * vice-versa. 
+     * 
+     * Como o número de inteiros que pode ser representado é diferente para positivos 
+     * e negativos (podemos representar um número negativo a mais), toda vez que 
+     * negarmos cada bit de um número, o valor resultante será menor do que o valor
+     * que esperamos encontrar em 1:
+     * 
+     * ~x = -x-1
+     * 
+     * Portanto, para corrigir isso, basta somar em 1 o valor encontrado com a 
+     * operação de negação.
+     */
+    return (~x)+1;
 }
 
 /*
@@ -229,7 +265,11 @@ int32_t negativo(int32_t x) {
  *              11 | 1001 -> 1011
  */
 int32_t bitwiseOr(int32_t x, int32_t y) {
-    return -1;
+    /*
+     * Cheguei nesse resultado com as tabelas verdade das operações & e ^. 
+     * Explicar melhor.
+     */
+    return ~((~(x&y))&(~x^y));
 }
 
 /*
@@ -318,7 +358,7 @@ int32_t bitEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t byteEmP(int32_t x, uint8_t p) {
-    return ((0x1<<p)&x)>>p;
+    return ((0xFF<<p)&x)>>p;
 }
 
 /*
@@ -337,7 +377,7 @@ int32_t byteEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-    return x;
+    return  x^0;
 }
 
 void teste(int32_t saida, int32_t esperado) {
