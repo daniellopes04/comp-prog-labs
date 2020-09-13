@@ -57,8 +57,6 @@
  */
 int32_t ehDiferente(int32_t x, int32_t y) {
     /*
-     * se x^y = 0, x=y
-     * 
      * A operação de negação lógica (! na linguagem C) tranforma valores falsos
      * em verdadeiros e vice-versa. Em C, o valor 0 é considerado falso e qualquer
      * outro valor é considerado verdadeiro (ou seja, isso inclui números positivos
@@ -547,7 +545,46 @@ int32_t byteEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-    return  ~(x&&1)+2;
+    /*
+     * Sabemos que na representação de números positivos e negativos, consideram-se os 
+     * números com o primeiro algarismo (bit) igual a 0 como positivos e aqueles com o 
+     * primeiro algarismo em 1 como negativos.
+     * 
+     * Queremos que a função retorne 1 quando a entrada for 0 e retorne 0 quando for
+     * qualquer outro número. Ou seja, se a entrada x for menor ou maior que zero, 
+     * devemos retornar zero. Devemos então, tranformar 0 em 1, e qualquer outra coisa
+     * em 0.
+     * 
+     * Dessa forma, podemos pensar na negação lógica como uma operação para transformar
+     * números positivos em negativos, mantendo os números negativos e o zero. Assim, 
+     * para obter a saída que esperamos, basta deslocar o bit de sinal dos números (que 
+     * será 1 para todas as entradas diferentes de zero e 0 somente para  entrada 0) para
+     * a posição menos significativa do número.
+     * 
+     * Podemos fazer isso com uma operação de "ou" (|) entre o número x e o seu complemento
+     * ~x. Quando fazemos o complemento (~) de um número bit a bit, o que acontece é que
+     * cada bit da representação é trocado pelo bit oposto (de 0 pra 1 e vice-versa). A
+     * operação ~x equivale a -x-1, como já discutido anteriormente. Portanto, somando um
+     * ao complemente teremos algo equivalente a x|-x, sendo o resultado dessa operação
+     * sempre um valor negativo (com o primeiro bit, de sinal, em 1) quando x>0 e quando
+     * x<0. A operação 0|-0 mantém o resultado 0.
+     * 
+     * Agora, temos todas as entradas no formato de números negativos ou zero. Para obter
+     * a saída que esperamos, precisamos então deslocar o bit de sinal da posição mais
+     * significativa para a menos significativa. 
+     * 
+     * Porém, até aqui tratamos apenas dos bits mais e menos significativos, precisamos 
+     * notar também que, ao fazer a operação "ou" bit a bit do número x com seu complemento
+     * ~x, o resultado será sempre 1. Isso significa que, em todas as outras posições da 
+     * representação do nosso número, o valor do bit será 1. Fazendo então o deslocamento 
+     * do bit mais significativo para o menos significativo, teremos duas possibilidades: 
+     * todos os outros bits estarão em 0 caso a entrada inicial tenha sido 0, ou estarão 
+     * todos em 1 caso a entrada inicial tenha sido diferente de zero. Assim, teremos como 
+     * resultado da operação de deslocamento o número 0, ou o número -1 (representado com 
+     * todos os bits em 1). Então, como passo final, precisamos somar 1 a esses valores 
+     * para obter o resultado esperado.
+     */
+    return  (((~x+1)|x)>>31)+1;
 }
 
 void teste(int32_t saida, int32_t esperado) {
